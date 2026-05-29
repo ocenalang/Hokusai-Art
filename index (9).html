@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="fr" data-lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hokusai — L'Œil de la Vague</title>
+  <meta name="description" content="Une exploration personnelle de l'œuvre de Katsushika Hokusai." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Cinzel:wght@400;600&family=Libre+Baskerville:ital@1&display=swap" rel="stylesheet" />
+<style>
+/* Variables de couleurs et polices */
+:root {
+  --bg:        #0e0806;
+  --bg2:       #160d08;
+  --surface:   #241507;
+  --gold:      #c4813a;
+  --gold-lt:   #e2a85c;
+  --gold-pale: #f0ceaa;
+  --rust:      #8b3a1a;
+  --rust-lt:   #b04d24;
+  --cream:     #f5e8d0;
+  --cream-dim: #b8a48a;
+  --muted:     rgba(193,163,120,0.45);
+  --border:    rgba(196,129,58,0.18);
+  --border-lt: rgba(196,129,58,0.35);
+  --cinzel:    'Cinzel', serif;
+  --cormorant: 'Cormorant Garamond', serif;
+  --baskerville: 'Libre Baskerville', serif;
+  --nav-h: 72px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--cream);
+  font-family: var(--cormorant);
+  line-height: 1.75;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; height: auto; }
+a { color: inherit; text-decoration: none; }
+
+/* Apparition au scroll via @keyframes + animation-timeline */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fadeLeft {
+  from { opacity: 0; transform: translateX(-40px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fadeRight {
+  from { opacity: 0; transform: translateX(40px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.reveal {
+  animation: fadeUp linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 25%;
+}
+.reveal-left {
+  animation: fadeLeft linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 25%;
+}
+.reveal-right {
+  animation: fadeRight linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 25%;
+}
+
+/* Navigation */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  height: var(--nav-h);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4vw;
+  background: rgba(14,8,6,0.85);
+  border-bottom: 0.5px solid var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.nav-logo {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.nav-logo-jp {
+  font-family: var(--cinzel);
+  font-size: 1.5rem;
+  color: var(--gold);
+}
+.nav-logo-text {
+  font-family: var(--cinzel);
+  font-size: 0.9rem;
+  color: var(--gold-pale);
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+.nav-links {
+  display: flex;
+  gap: 2.5rem;
+}
+.nav-links a {
+  font-family: var(--cormorant);
+  font-size: 0.9rem;
+  letter-spacing: 0.12em;
+  color: var(--cream-dim);
+  text-transform: uppercase;
+  transition: color 0.25s;
+  position: relative;
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  bottom: -3px; left: 0; right: 0;
+  height: 0.5px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s ease;
+}
+.nav-links a:hover { color: var(--gold-lt); }
+.nav-links a:hover::after { transform: scaleX(1); }
+
+/* Bouton langue */
+.lang-btn {
+  cursor: pointer;
+  font-family: var(--cinzel);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  padding: 6px 14px;
+  border: 0.5px solid var(--border-lt);
+  border-radius: 2px;
+  background: none;
+  transition: background 0.25s, color 0.25s;
+}
+.lang-btn:hover { background: var(--gold); color: var(--bg); }
+
+/* Hero */
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute;
+  inset: 0;
+}
+.hero-bg svg {
+  width: 100%; height: 100%;
+}
+.hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 780px;
+  padding: calc(var(--nav-h) + 60px) 4vw 80px;
+}
+.hero-eyebrow {
+  font-family: var(--cinzel);
+  font-size: 0.78rem;
+  letter-spacing: 0.35em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+.hero-title {
+  font-family: var(--cormorant);
+  font-weight: 300;
+  line-height: 1.05;
+  margin-bottom: 2rem;
+}
+.hero-title-jp {
+  display: block;
+  font-family: var(--cinzel);
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  color: var(--rust-lt);
+  letter-spacing: 0.3em;
+  margin-bottom: 0.5rem;
+  opacity: 0.7;
+}
+.hero-title-main {
+  display: block;
+  font-size: clamp(3.2rem, 8vw, 7rem);
+  color: var(--cream);
+}
+.hero-title-main em {
+  font-style: italic;
+  font-family: var(--baskerville);
+  color: var(--gold-lt);
+}
+.hero-divider {
+  display: block;
+  width: 60px;
+  height: 0.5px;
+  background: linear-gradient(90deg, var(--gold), transparent);
+  margin: 0.6rem 0;
+}
+.hero-sub {
+  font-size: 1.2rem;
+  color: var(--cream-dim);
+  max-width: 540px;
+  line-height: 1.85;
+  margin-bottom: 2.5rem;
+  font-style: italic;
+}
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--cinzel);
+  font-size: 0.8rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--gold);
+  padding: 14px 28px;
+  border: 0.5px solid var(--border-lt);
+  border-radius: 2px;
+  transition: background 0.3s, color 0.3s;
+}
+.hero-cta:hover { background: var(--gold); color: var(--bg); }
+.hero-cta svg { transition: transform 0.3s ease; }
+.hero-cta:hover svg { transform: translateY(4px); }
+
+/* Ligne de scroll */
+.scroll-line {
+  position: absolute;
+  bottom: 40px; right: 4vw;
+  z-index: 2;
+  width: 0.5px;
+  height: 60px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}
+
+/* Bandeau chiffre */
+.banner {
+  padding: 80px 4vw;
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  background: var(--bg2);
+}
+.banner-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+.banner-num {
+  font-family: var(--cinzel);
+  font-size: clamp(4rem, 8vw, 7rem);
+  color: var(--rust);
+  line-height: 1;
+  opacity: 0.6;
+  flex-shrink: 0;
+}
+.banner-inner p {
+  font-size: clamp(1.1rem, 2vw, 1.45rem);
+  font-style: italic;
+  color: var(--cream-dim);
+  line-height: 1.8;
+}
+
+/* Galerie */
+.gallery {
+  padding: 120px 4vw;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.gallery-header {
+  text-align: center;
+  margin-bottom: 100px;
+}
+.gallery-header h2 {
+  font-family: var(--cinzel);
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.gallery-header p {
+  font-style: italic;
+  font-size: 1.15rem;
+  color: var(--cream-dim);
+}
+
+/* Bloc œuvre */
+.work {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6vw;
+  align-items: start;
+  margin-bottom: 140px;
+  padding-bottom: 140px;
+  border-bottom: 0.5px solid var(--border);
+}
+.work:last-child { border-bottom: none; margin-bottom: 0; }
+.work.reverse .img-col { order: 2; }
+.work.reverse .txt-col { order: 1; }
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+.frame img {
+  width: 100%;
+  height: auto;
+  max-height: 560px;
+  object-fit: contain;
+  object-position: center;
+  display: block;
+  background: #0a0503;
+  transition: transform 0.8s ease;
+  filter: sepia(0.08) saturate(0.9);
+}
+.frame:hover img { transform: scale(1.04); }
+
+/* Coins dorés sur les images */
+.corner {
+  position: absolute;
+  width: 24px; height: 24px;
+  border-color: var(--gold);
+  border-style: solid;
+  opacity: 0.6;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.frame:hover .corner { opacity: 1; }
+.corner.tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+.corner.br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+
+/* Encadré fait insolite */
+.fact {
+  margin-top: 1.5rem;
+  padding: 1.2rem 1.5rem;
+  border-left: 1px solid var(--rust);
+  background: var(--bg2);
+  display: flex;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+.fact-star { color: var(--gold); font-size: 0.75rem; margin-top: 4px; flex-shrink: 0; }
+.fact p {
+  font-size: 0.88rem;
+  font-style: italic;
+  color: var(--cream-dim);
+  line-height: 1.7;
+}
+
+/* Colonne texte */
+.txt-col { padding-top: 20px; }
+.work-num {
+  font-family: var(--cinzel);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--rust-lt);
+  margin-bottom: 0.5rem;
+  display: block;
+}
+.work-date {
+  font-family: var(--cinzel);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 0.6rem;
+  text-transform: uppercase;
+}
+.work-title {
+  font-family: var(--cormorant);
+  font-weight: 400;
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  color: var(--gold-pale);
+  line-height: 1.2;
+  margin-bottom: 0.5rem;
+}
+.work-tech {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--muted);
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 0.5px solid var(--border);
+}
+.critique {
+  position: relative;
+  padding-left: 1.4rem;
+}
+.critique::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 4px; bottom: 4px;
+  width: 1px;
+  background: linear-gradient(180deg, var(--gold), transparent);
+}
+.critique p {
+  font-size: 1.05rem;
+  color: var(--cream);
+  line-height: 1.9;
+  font-style: italic;
+}
+
+/* Section artiste */
+.artist {
+  background: var(--bg2);
+  border-top: 0.5px solid var(--border);
+  border-bottom: 0.5px solid var(--border);
+  padding: 120px 4vw;
+}
+.artist-inner {
+  max-width: 1100px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 6vw;
+  align-items: start;
+}
+.artist-eyebrow {
+  display: block;
+  font-family: var(--cinzel);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--rust-lt);
+  margin-bottom: 0.8rem;
+}
+.artist-text h2 {
+  font-family: var(--cormorant);
+  font-weight: 300;
+  font-size: clamp(2rem, 4vw, 3.2rem);
+  color: var(--gold-pale);
+  margin-bottom: 2rem;
+  line-height: 1.1;
+}
+.artist-text p {
+  font-size: 1.05rem;
+  color: var(--cream-dim);
+  line-height: 1.9;
+  margin-bottom: 1.5rem;
+  font-style: italic;
+}
+.stats { display: flex; flex-direction: column; gap: 2rem; padding-top: 20px; }
+.stat {
+  padding: 1.5rem;
+  border: 0.5px solid var(--border-lt);
+  border-radius: 2px;
+  text-align: center;
+  background: var(--surface);
+  transition: border-color 0.3s;
+}
+.stat:hover { border-color: var(--gold); }
+.stat-num {
+  display: block;
+  font-family: var(--cinzel);
+  font-size: 2.2rem;
+  color: var(--gold);
+  margin-bottom: 0.3rem;
+}
+.stat-label { font-size: 0.85rem; color: var(--cream-dim); font-style: italic; }
+
+/* Footer */
+footer {
+  padding: 80px 4vw 40px;
+  background: var(--bg);
+}
+.footer-inner { max-width: 1100px; margin: 0 auto; }
+.footer-jp {
+  display: block;
+  font-family: var(--cinzel);
+  font-size: 2.5rem;
+  color: var(--rust);
+  opacity: 0.5;
+  margin-bottom: 0.5rem;
+}
+.footer-inner > p {
+  font-size: 0.9rem;
+  font-style: italic;
+  color: var(--cream-dim);
+  margin-bottom: 2.5rem;
+}
+.footer-links { display: flex; gap: 2rem; margin-bottom: 3rem; flex-wrap: wrap; }
+.footer-links a {
+  font-family: var(--cinzel);
+  font-size: 0.78rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold);
+  transition: color 0.25s;
+}
+.footer-links a:hover { color: var(--gold-lt); }
+.footer-copy {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-style: italic;
+  padding-top: 2rem;
+  border-top: 0.5px solid var(--border);
+}
+
+.footer-contact {
+  margin-bottom: 3rem;
+  padding: 1.8rem 2rem;
+  border: 0.5px solid var(--border-lt);
+  border-radius: 2px;
+  display: inline-block;
+}
+.footer-contact-name {
+  font-family: var(--cinzel);
+  font-size: 1.1rem;
+  color: var(--gold-pale);
+  margin-bottom: 0.2rem;
+}
+.footer-contact-role {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--cream-dim);
+  margin-bottom: 1rem;
+  letter-spacing: 0.05em;
+}
+.footer-contact-links {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+.footer-contact-links a {
+  font-family: var(--cinzel);
+  font-size: 0.78rem;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  transition: color 0.25s;
+}
+.footer-contact-links a:hover { color: var(--gold-lt); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .work { grid-template-columns: 1fr; gap: 3rem; margin-bottom: 80px; padding-bottom: 80px; }
+  .work.reverse .img-col, .work.reverse .txt-col { order: unset; }
+  .artist-inner { grid-template-columns: 1fr; }
+  .stats { flex-direction: row; flex-wrap: wrap; }
+  .stat { flex: 1 1 140px; }
+  .nav-links { display: none; }
+  .banner-inner { flex-direction: column; gap: 1.5rem; text-align: center; }
+}
+@media (max-width: 600px) {
+  .hero-content { padding-top: calc(var(--nav-h) + 40px); }
+  .hero-title-main { font-size: 2.8rem; }
+  .gallery { padding: 80px 5vw; }
+  .gallery-header { margin-bottom: 60px; }
+  .footer-links { gap: 1.2rem; }
+}
+
+::selection { background: var(--rust); color: var(--cream); }
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--rust); border-radius: 2px; }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <span class="nav-logo-jp">北斎</span>
+    <span class="nav-logo-text">Hokusai</span>
+  </div>
+  <div class="nav-links">
+    <a href="#oeuvres" data-fr="Œuvres" data-en="Works">Œuvres</a>
+    <a href="#artiste" data-fr="L'artiste" data-en="The artist">L'artiste</a>
+    <a href="#contact" data-fr="Contact" data-en="Contact">Contact</a>
+  </div>
+  <button class="lang-btn" id="langBtn">EN</button>
+</nav>
+
+<header class="hero">
+  <div class="hero-bg">
+    <svg viewBox="0 0 1440 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <radialGradient id="bg" cx="60%" cy="40%" r="70%">
+          <stop offset="0%" stop-color="#3d1a0e"/>
+          <stop offset="100%" stop-color="#0e0806"/>
+        </radialGradient>
+      </defs>
+      <rect width="1440" height="800" fill="url(#bg)"/>
+      <g opacity="0.1" stroke="#c4813a" stroke-width="0.8" fill="none">
+        <path d="M0,500 Q180,460 360,500 Q540,540 720,500 Q900,460 1080,500 Q1260,540 1440,500"/>
+        <path d="M0,520 Q200,480 400,520 Q600,560 800,520 Q1000,480 1200,520 Q1400,560 1440,525"/>
+        <path d="M0,480 Q220,440 440,480 Q660,520 880,480 Q1100,440 1320,480 L1440,485"/>
+      </g>
+      <g opacity="0.04" stroke="#c4813a" stroke-width="0.5" fill="none">
+        <line x1="0" y1="200" x2="1440" y2="200"/>
+        <line x1="0" y1="400" x2="1440" y2="400"/>
+        <line x1="480" y1="0" x2="480" y2="800"/>
+        <line x1="960" y1="0" x2="960" y2="800"/>
+      </g>
+    </svg>
+  </div>
+  <div class="hero-content">
+    <span class="hero-eyebrow">1760 — 1849</span>
+    <h1 class="hero-title">
+      <span class="hero-title-jp" aria-hidden="true">北斎</span>
+      <span class="hero-title-main">
+        <em data-fr="L'Œil" data-en="The Eye">L'Œil</em>
+        <span class="hero-divider"></span>
+        <span data-fr="de la Vague" data-en="of the Wave">de la Vague</span>
+      </span>
+    </h1>
+    <p class="hero-sub"
+       data-fr="Une traversée personnelle dans l'univers de Katsushika Hokusai — peintre, graveur, et visionnaire qui redéfinit le temps."
+       data-en="A personal journey through the universe of Katsushika Hokusai — painter, printmaker, and visionary who redefined time.">
+      Une traversée personnelle dans l'univers de Katsushika Hokusai — peintre, graveur, et visionnaire qui redéfinit le temps.
+    </p>
+    <a href="#oeuvres" class="hero-cta">
+      <span data-fr="Explorer les œuvres" data-en="Explore the works">Explorer les œuvres</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </a>
+  </div>
+  <div class="scroll-line" aria-hidden="true"></div>
+</header>
+
+<section class="banner">
+  <div class="banner-inner reveal">
+    <span class="banner-num" aria-hidden="true">30</span>
+    <p data-fr="Hokusai a changé de nom plus de 30 fois au cours de sa vie — chaque nom marquait une renaissance artistique."
+       data-en="Hokusai changed his name more than 30 times throughout his life — each name marked an artistic rebirth.">
+      Hokusai a changé de nom plus de 30 fois au cours de sa vie — chaque nom marquait une renaissance artistique.
+    </p>
+  </div>
+</section>
+
+<section class="gallery" id="oeuvres">
+  <div class="gallery-header reveal">
+    <h2 data-fr="Les Œuvres" data-en="The Works">Les Œuvres</h2>
+    <p data-fr="Chaque pièce, une fenêtre sur un monde disparu." data-en="Each piece, a window into a vanished world.">
+      Chaque pièce, une fenêtre sur un monde disparu.
+    </p>
+  </div>
+
+  <!-- Œuvre 1 -->
+  <article class="work">
+    <div class="img-col reveal-left">
+      <div class="frame">
+        <img src="vague.jpg"
+             alt="La Grande Vague de Kanagawa, Hokusai" loading="lazy"/>
+        <div class="corner tl" aria-hidden="true"></div>
+        <div class="corner br" aria-hidden="true"></div>
+      </div>
+      <div class="fact">
+        <span class="fact-star" aria-hidden="true">✦</span>
+        <p data-fr="Cette estampe se trouve dans plus de 40 musées à travers le monde — record absolu pour une œuvre japonaise."
+           data-en="This print is held in over 40 museums worldwide — an absolute record for a Japanese work.">
+          Cette estampe se trouve dans plus de 40 musées à travers le monde — record absolu pour une œuvre japonaise.
+        </p>
+      </div>
+    </div>
+    <div class="txt-col reveal-right">
+      <span class="work-num">01</span>
+      <p class="work-date">c. 1831</p>
+      <h3 class="work-title" data-fr="La Grande Vague de Kanagawa" data-en="The Great Wave off Kanagawa">La Grande Vague de Kanagawa</h3>
+      <p class="work-tech" data-fr="Estampe xylographique, série « 36 vues du Mont Fuji »" data-en="Woodblock print, series '36 Views of Mount Fuji'">Estampe xylographique, série « 36 vues du Mont Fuji »</p>
+      <div class="critique">
+        <p data-fr="Ce qui me frappe ici, ce n'est pas la vague — c'est ce qu'elle écrase dans sa paume. Le Fuji, symbole éternel de la permanence japonaise, se retrouve réduit à un triangle pâle, presque insignifiant au loin. Hokusai n'a pas peint la nature comme décor ; il l'a peinte comme protagoniste. La vague ne menace pas les bateaux — elle menace notre sentiment de maîtrise. Chaque fois que je reviens à cette image, je remarque quelque chose de nouveau : les griffes d'écume qui ressemblent à des doigts. Un détail si brutal qu'il en devient presque tendre."
+           data-en="What strikes me here isn't the wave — it's what it crushes in its palm. Mount Fuji, eternal symbol of Japanese permanence, is reduced to a pale triangle, almost insignificant in the distance. Hokusai didn't paint nature as backdrop; he painted it as protagonist. The wave doesn't threaten the boats — it threatens our sense of control. Every time I return to this image, I notice something new: the foam claws that resemble fingers. A detail so brutal it becomes almost tender.">
+          Ce qui me frappe ici, ce n'est pas la vague — c'est ce qu'elle écrase dans sa paume. Le Fuji, symbole éternel de la permanence japonaise, se retrouve réduit à un triangle pâle, presque insignifiant au loin. Hokusai n'a pas peint la nature comme décor ; il l'a peinte comme protagoniste. La vague ne menace pas les bateaux — elle menace notre sentiment de maîtrise. Chaque fois que je reviens à cette image, je remarque quelque chose de nouveau : les griffes d'écume qui ressemblent à des doigts. Un détail si brutal qu'il en devient presque tendre.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Œuvre 2 -->
+  <article class="work reverse">
+    <div class="img-col reveal-right">
+      <div class="frame">
+        <img src="fuji.jpg"
+             alt="Fine Vent, Ciel Clair — Fuji Rouge, Hokusai" loading="lazy"/>
+        <div class="corner tl" aria-hidden="true"></div>
+        <div class="corner br" aria-hidden="true"></div>
+      </div>
+      <div class="fact">
+        <span class="fact-star" aria-hidden="true">✦</span>
+        <p data-fr="Le rouge du Fuji n'est visible qu'au lever du soleil en été. En japonais : 赤富士 (Aka Fuji)."
+           data-en="The red of Fuji is only visible at sunrise in summer. In Japanese: 赤富士 (Aka Fuji).">
+          Le rouge du Fuji n'est visible qu'au lever du soleil en été. En japonais : 赤富士 (Aka Fuji).
+        </p>
+      </div>
+    </div>
+    <div class="txt-col reveal-left">
+      <span class="work-num">02</span>
+      <p class="work-date">c. 1831</p>
+      <h3 class="work-title" data-fr="Fine Vent, Ciel Clair" data-en="Fine Wind, Clear Morning">Fine Vent, Ciel Clair</h3>
+      <p class="work-tech" data-fr="Estampe xylographique — « Aka Fuji »" data-en="Woodblock print — 'Aka Fuji' (Red Fuji)">Estampe xylographique — « Aka Fuji »</p>
+      <div class="critique">
+        <p data-fr="Là où la Grande Vague hurle, le Fuji Rouge murmure. Il m'a fallu des années pour comprendre pourquoi cette image m'apaisait autant. C'est une œuvre de seuil — Hokusai capture l'instant improbable où la montagne et le soleil se mettent d'accord, où le monde retient son souffle. La montagne n'est plus un fond : elle est lumière elle-même. Et ces petits arbres à sa base ? Ils ancrent le divin dans le végétal, le transcendant dans l'ordinaire. Hokusai, ici, est moins peintre que météorologiste de l'âme."
+           data-en="Where the Great Wave screams, the Red Fuji whispers. It took me years to understand why this image calmed me so. It's a threshold work — Hokusai captures the improbable moment when mountain and sun reach an accord, when the world holds its breath. The mountain is no longer backdrop: it is light itself. And those small trees at its base? They anchor the divine in the vegetal, the transcendent in the ordinary. Hokusai here is less painter than meteorologist of the soul.">
+          Là où la Grande Vague hurle, le Fuji Rouge murmure. Il m'a fallu des années pour comprendre pourquoi cette image m'apaisait autant. C'est une œuvre de seuil — Hokusai capture l'instant improbable où la montagne et le soleil se mettent d'accord, où le monde retient son souffle. La montagne n'est plus un fond : elle est lumière elle-même. Et ces petits arbres à sa base ? Ils ancrent le divin dans le végétal, le transcendant dans l'ordinaire. Hokusai, ici, est moins peintre que météorologiste de l'âme.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Œuvre 3 -->
+  <article class="work">
+    <div class="img-col reveal-left">
+      <div class="frame">
+        <img src="reve.jpg"
+             alt="Le Rêve de la femme du pêcheur, Hokusai" loading="lazy"/>
+        <div class="corner tl" aria-hidden="true"></div>
+        <div class="corner br" aria-hidden="true"></div>
+      </div>
+      <div class="fact">
+        <span class="fact-star" aria-hidden="true">✦</span>
+        <p data-fr="Cette œuvre a inspiré des artistes symbolistes européens comme Félicien Rops et Franz von Stuck, un siècle plus tard."
+           data-en="This work inspired European Symbolist artists like Félicien Rops and Franz von Stuck, a full century later.">
+          Cette œuvre a inspiré des artistes symbolistes européens comme Félicien Rops et Franz von Stuck, un siècle plus tard.
+        </p>
+      </div>
+    </div>
+    <div class="txt-col reveal-right">
+      <span class="work-num">03</span>
+      <p class="work-date">c. 1814</p>
+      <h3 class="work-title" data-fr="Le Rêve de la femme du pêcheur" data-en="The Dream of the Fisherman's Wife">Le Rêve de la femme du pêcheur</h3>
+      <p class="work-tech" data-fr="Gravure sur bois, encre et pigments" data-en="Woodblock print, ink and pigments">Gravure sur bois, encre et pigments</p>
+      <div class="critique">
+        <p data-fr="Il serait facile de réduire cette image à sa dimension provocatrice — c'est d'ailleurs ce que l'Occident a longtemps fait. Mais regardez la posture de la femme : ce n'est pas la passivité. C'est un rêve qu'elle gouverne. Au Japon de l'époque Edo, les pieuvres incarnaient la puissance des profondeurs, l'inconscient, le désir sans honte. Hokusai ne choque pas — il transcrit. Ce qui me trouble dans cette œuvre, c'est sa douceur. Les lignes s'entrelacent avec une grâce presque végétale. C'est un tableau sur le désir comme force cosmique, pas comme transgression."
+           data-en="It would be easy to reduce this image to its provocative dimension — which is indeed what the West did for a long time. But look at the woman's posture: it is not passivity. It's a dream she governs. In Edo-period Japan, octopuses embodied the power of the depths, the unconscious, shameless desire. Hokusai doesn't shock — he transcribes. What troubles me in this work is its gentleness. The lines intertwine with an almost vegetal grace. This is a painting about desire as cosmic force, not transgression.">
+          Il serait facile de réduire cette image à sa dimension provocatrice — c'est d'ailleurs ce que l'Occident a longtemps fait. Mais regardez la posture de la femme : ce n'est pas la passivité. C'est un rêve qu'elle gouverne. Au Japon de l'époque Edo, les pieuvres incarnaient la puissance des profondeurs, l'inconscient, le désir sans honte. Hokusai ne choque pas — il transcrit. Ce qui me trouble dans cette œuvre, c'est sa douceur. Les lignes s'entrelacent avec une grâce presque végétale. C'est un tableau sur le désir comme force cosmique, pas comme transgression.
+        </p>
+      </div>
+    </div>
+  </article>
+
+  <!-- Œuvre 4 -->
+  <article class="work reverse">
+    <div class="img-col reveal-right">
+      <div class="frame">
+        <img src="tigre.jpg"
+             alt="Tigre dans la neige, Hokusai" loading="lazy"/>
+        <div class="corner tl" aria-hidden="true"></div>
+        <div class="corner br" aria-hidden="true"></div>
+      </div>
+      <div class="fact">
+        <span class="fact-star" aria-hidden="true">✦</span>
+        <p data-fr="Hokusai n'avait jamais vu de tigre de sa vie. Il s'est basé sur des descriptions écrites et des fourrures importées pour le peindre."
+           data-en="Hokusai had never seen a tiger in his life. He worked from written descriptions and imported furs to paint it.">
+          Hokusai n'avait jamais vu de tigre de sa vie. Il s'est basé sur des descriptions écrites et des fourrures importées pour le peindre.
+        </p>
+      </div>
+    </div>
+    <div class="txt-col reveal-left">
+      <span class="work-num">04</span>
+      <p class="work-date">c. 1849</p>
+      <h3 class="work-title" data-fr="Tigre dans la neige" data-en="Tiger in the Snow">Tigre dans la neige</h3>
+      <p class="work-tech" data-fr="Encre et couleurs sur soie" data-en="Ink and colors on silk">Encre et couleurs sur soie</p>
+      <div class="critique">
+        <p data-fr="C'est l'une des dernières œuvres de Hokusai, peinte alors qu'il approchait des 90 ans. Et pourtant — regardez l'intensité de ce regard. Le tigre ne vous regarde pas : il vous traverse. Ce qui m'émeut dans ce tableau, c'est qu'il incarne le paradoxe de toute la carrière de Hokusai : une vie entière consacrée à capturer des êtres que l'artiste n'avait jamais rencontrés, des lieux qu'il n'avait jamais visités, des émotions trop vastes pour tenir dans un corps humain. L'imagination comme unique vérité."
+           data-en="This is one of Hokusai's last works, painted when he was approaching 90. And yet — look at the intensity of that gaze. The tiger doesn't look at you: it looks through you. What moves me in this painting is that it embodies the paradox of Hokusai's entire career: a lifetime devoted to capturing beings the artist had never encountered, places he had never visited, emotions too vast to fit in a human body. Imagination as the only truth.">
+          C'est l'une des dernières œuvres de Hokusai, peinte alors qu'il approchait des 90 ans. Et pourtant — regardez l'intensité de ce regard. Le tigre ne vous regarde pas : il vous traverse. Ce qui m'émeut dans ce tableau, c'est qu'il incarne le paradoxe de toute la carrière de Hokusai : une vie entière consacrée à capturer des êtres que l'artiste n'avait jamais rencontrés, des lieux qu'il n'avait jamais visités, des émotions trop vastes pour tenir dans un corps humain. L'imagination comme unique vérité.
+        </p>
+      </div>
+    </div>
+  </article>
+</section>
+
+<section class="artist" id="artiste">
+  <div class="artist-inner">
+    <div class="artist-text reveal">
+      <span class="artist-eyebrow" data-fr="L'artiste" data-en="The artist">L'artiste</span>
+      <h2 data-fr="Katsushika Hokusai" data-en="Katsushika Hokusai">Katsushika Hokusai</h2>
+      <p data-fr="Né en 1760 à Edo (aujourd'hui Tokyo), Hokusai fut un enfant prodige qui, à six ans, dessinait déjà avec une précision déconcertante. En près de 70 ans de carrière active, il produisit plus de 30 000 œuvres — peintures, gravures, croquis, livres illustrés — explorant sans relâche les limites de ce que l'art pouvait exprimer."
+         data-en="Born in 1760 in Edo (present-day Tokyo), Hokusai was a child prodigy who by age six was already drawing with disconcerting precision. Over nearly 70 years of active career, he produced more than 30,000 works — paintings, prints, sketches, illustrated books — relentlessly exploring the limits of what art could express.">
+        Né en 1760 à Edo (aujourd'hui Tokyo), Hokusai fut un enfant prodige qui, à six ans, dessinait déjà avec une précision déconcertante. En près de 70 ans de carrière active, il produisit plus de 30 000 œuvres — peintures, gravures, croquis, livres illustrés — explorant sans relâche les limites de ce que l'art pouvait exprimer.
+      </p>
+      <p data-fr="À 90 ans, peu avant sa mort, il aurait déclaré : « Si le ciel m'accorde encore dix années — même cinq — je deviendrai un vrai peintre. » Cette phrase hante encore les couloirs de tous les musées qui possèdent ses œuvres."
+         data-en="At 90, shortly before his death, he reportedly declared: 'If heaven grants me even ten more years — even five — I shall become a true painter.' This sentence still haunts the corridors of every museum that holds his works.">
+        À 90 ans, peu avant sa mort, il aurait déclaré : « Si le ciel m'accorde encore dix années — même cinq — je deviendrai un vrai peintre. » Cette phrase hante encore les couloirs de tous les musées qui possèdent ses œuvres.
+      </p>
+    </div>
+    <div class="stats reveal">
+      <div class="stat">
+        <span class="stat-num">30 000</span>
+        <span class="stat-label" data-fr="œuvres produites" data-en="works produced">œuvres produites</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">90</span>
+        <span class="stat-label" data-fr="ans à la mort" data-en="years at death">ans à la mort</span>
+      </div>
+      <div class="stat">
+        <span class="stat-num">30+</span>
+        <span class="stat-label" data-fr="noms utilisés" data-en="names used">noms utilisés</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="footer-inner">
+    <span class="footer-jp" aria-hidden="true">北斎</span>
+    <p data-fr="Un projet personnel — une exploration de l'art comme langage universel."
+       data-en="A personal project — an exploration of art as universal language.">
+      Un projet personnel — une exploration de l'art comme langage universel.
+    </p>
+    <div class="footer-links">
+      <a href="#oeuvres" data-fr="Œuvres" data-en="Works">Œuvres</a>
+      <a href="#artiste" data-fr="L'artiste" data-en="The artist">L'artiste</a>
+    </div>
+    <div class="footer-contact">
+      <p class="footer-contact-name">Océane Langlet</p>
+      <p class="footer-contact-role">BTS SIO – option SLAM</p>
+      <div class="footer-contact-links">
+        <a href="tel:+33757673819">+33 7 57 67 38 19</a>
+        <a href="mailto:langletoce@gmail.com">langletoce@gmail.com</a>
+      </div>
+    </div>
+    <p class="footer-copy"
+       data-fr="Les œuvres reproduites appartiennent au domaine public. Analyses personnelles © 2025."
+       data-en="Reproduced works are in the public domain. Personal analyses © 2025.">
+      Les œuvres reproduites appartiennent au domaine public. Analyses personnelles © 2025.
+    </p>
+  </div>
+</footer>
+
+<script>
+// Bascule langue FR / EN
+let lang = 'fr';
+const btn = document.getElementById('langBtn');
+
+btn.addEventListener('click', () => {
+  lang = lang === 'fr' ? 'en' : 'fr';
+  btn.textContent = lang === 'fr' ? 'EN' : 'FR';
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-fr][data-en]').forEach(el => {
+    el.textContent = el.dataset[lang];
+  });
+});
+</script>
+</body>
+</html>
